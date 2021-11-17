@@ -1,0 +1,23 @@
+{
+  "packageDirectories": [
+    {
+      "path": "force-app",
+      "default": true,
+      "package": "Nebula Object Transformer",
+      "versionName": "0.0.1",
+      "versionNumber": "0.0.1.NEXT",
+      "dependencies": [
+        {
+          "package": "Nebula Core"
+        }
+      ]
+    }
+  ],
+  "name": "Nebula Object Transformer",
+  "namespace": "nebc",
+  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sourceApiVersion": "53.0",
+  "packageAliases": {
+    "Nebula Core": "04t6M000000kmKoQAI"
+  }
+}
