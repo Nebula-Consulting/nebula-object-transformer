@@ -109,7 +109,7 @@ private class TransformationTest {
         System.assertEquals(theContact.FirstName, newMap.get('first_name'));
         System.assertEquals(theContact.LastName, newMap.get('last_name'));
 
-        Transformation reverseTransformation = thisTransformation.getReverse(Contact.class);
+        Transformation reverseTransformation = new ReverseTransformation(transformationFieldMetadata, Contact.class);
 
         Contact roundTripContact = (Contact)reverseTransformation.call(newMap);
 
