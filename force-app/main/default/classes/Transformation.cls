@@ -5,13 +5,15 @@
  * Transformation_Field__mdt records
  */
 
-public virtual inherited sharing class Transformation implements nebc.Function {
+global virtual inherited sharing class Transformation implements nebc.Function {
 
-    private List<Transformation_Field__mdt> transformMetadata;
+    private List<nebc.Tuple> metadataAndFunction;
     private Type targetType;
-    private static nebc.Function transformField = new nebc.FieldFromSObject(Transformation_Field__mdt.Target_Field__c);
 
-    public Transformation(String transformationName, Type targetType) {
+    private static nebc.Function metadataAndFunctionToTargetField = new nebc.Composition(new nebc.Left()).compose(new nebc.FieldFromSObject(Transformation_Field__mdt.Target_Field__c));
+    private static nebc.Function metadataToSourceField = new nebc.FieldFromSObject(Transformation_Field__mdt.Source_Field__c);
+
+    global Transformation(String transformationName, Type targetType) {
         this(
         [
                 SELECT Source_Field__c, Target_Field__c, Apex_Class__c
@@ -22,48 +24,53 @@ public virtual inherited sharing class Transformation implements nebc.Function {
     }
 
     @TestVisible
-    protected Transformation(List<Transformation_Field__mdt> transformationFields, Type targetType) {
-        this.transformMetadata = transformationFields;
+    protected Transformation(List<Transformation_Field__mdt> transformationMetadata, Type targetType) {
+        this.metadataAndFunction = (List<nebc.Tuple>)new nebc.LazySObjectIterator(transformationMetadata)
+                .putIf(new nebc.IsNull(Transformation_Field__mdt.Source_Field__c), Transformation_Field__mdt.Source_Field__c, 'Id')
+                .putIf(new nebc.IsNull(Transformation_Field__mdt.Apex_Class__c), Transformation_Field__mdt.Apex_Class__c, nebc.IdentityFunction.class.getName())
+                .mapValues(new nebc.ToTwoTuple(new nebc.IdentityFunction(), new NewTransformFunctionInstance()))
+                .toList(new List<nebc.Tuple>());
         this.targetType = targetType;
     }
 
-    public Object call(Object inputToTransform) {
+    global Object call(Object inputToTransform) {
         Object result = targetType.newInstance();
 
-        new nebc.LazySObjectIterator(transformMetadata)
-                .mapValues(new nebc.ToTwoTuple(transformField, new TransformValue(inputToTransform)))
+        nebc.Function metadataToValue = new nebc.Composition(metadataToSourceField)
+                .compose(new nebc.GetFrom(inputToTransform));
+
+        nebc.Function metadataAndFunctionToTransformedValue = new nebc.Composition(new nebc.TwoTupleMapValues(metadataToValue, new nebc.IdentityFunction()))
+                .compose(new ApplyRightToLeft());
+
+        new nebc.LazySObjectIterator(metadataAndFunction)
+                .mapValues(new nebc.TupleMapFunction(metadataAndFunctionToTargetField, metadataAndFunctionToTransformedValue)
+                .setTupleNewInstance(nebc.TwoTuple.newInstance))
                 .forEach(new nebc.PutTo(result));
 
         return result;
     }
 
-    public Set<String> getSourceFields() {
-        return new nebc.LazySObjectIterator(transformMetadata).get(Transformation_Field__mdt.Source_Field__c, new Set<String>());
+    private class ApplyRightToLeft implements nebc.Function {
+
+        public Object call(Object o) {
+            nebc.Tuple tuple = (nebc.Tuple)o;
+            return ((nebc.Function)tuple.get(1)).call(tuple.get(0));
+        }
     }
 
-    private class TransformValue implements nebc.Function {
+    global Set<String> getSourceFields() {
+        return new nebc.LazyIterator(metadataAndFunction)
+                .mapValues(new nebc.Left())
+                .mapValues(new nebc.FieldFromSObject(Transformation_Field__mdt.Source_Field__c))
+                .toSet(new Set<String>());
+    }
 
-        private Object inputToTransform;
-
-        public TransformValue(Object inputToTransform) {
-            this.inputToTransform = inputToTransform;
-        }
+    private class NewTransformFunctionInstance implements nebc.Function {
 
         public Object call(Object o) {
             Transformation_Field__mdt transformationFieldMetadata = (Transformation_Field__mdt)o;
-
-            Object sourceValue = transformationFieldMetadata.Source_Field__c == null ? null : new nebc.GetFrom(inputToTransform).call(transformationFieldMetadata.Source_Field__c);
-
-            if(transformationFieldMetadata.Apex_Class__c == null) {
-                return sourceValue;
-            } else {
-                return getTransformFunction(transformationFieldMetadata).call(sourceValue);
-            }
-        }
-
-        private nebc.Function getTransformFunction(Transformation_Field__mdt transformationFieldMetadata) {
             Type transformationType = nebc.TypeLoader.getType(transformationFieldMetadata.Apex_Class__c);
-            return (nebc.Function)nebc.TypeLoader.getInstance(transformationType, transformationFieldMetadata.Apex_Class_Parameters__c);
+            return (nebc.Function) nebc.TypeLoader.getInstance(transformationType, transformationFieldMetadata.Apex_Class_Parameters__c);
         }
     }
 }

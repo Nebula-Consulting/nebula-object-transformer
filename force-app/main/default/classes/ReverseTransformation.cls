@@ -1,12 +1,12 @@
 /**
  * @author aidan@nebulaconsulting.co.uk
  * @date 17/11/2021
- * @description (if required)
+ * @description A Transformation instance that maps fields in the reverse of the configured direction
  */
 
-public inherited sharing class ReverseTransformation extends Transformation {
+global inherited sharing class ReverseTransformation extends Transformation {
 
-    public ReverseTransformation(String transformationName, Type targetType) {
+    global ReverseTransformation(String transformationName, Type targetType) {
         this(
         [
                 SELECT Source_Field__c, Target_Field__c, Apex_Class__c
