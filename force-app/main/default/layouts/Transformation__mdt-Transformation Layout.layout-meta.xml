@@ -47,9 +47,12 @@
         <style>TwoColumnsTopToBottom</style>
     </layoutSections>
     <layoutSections>
-        <customLabel>false</customLabel>
+        <customLabel>true</customLabel>
         <detailHeading>false</detailHeading>
         <editHeading>false</editHeading>
+        <label>Custom Links</label>
+        <layoutColumns/>
+        <layoutColumns/>
         <layoutColumns/>
         <style>CustomLinks</style>
     </layoutSections>
@@ -57,11 +60,23 @@
         <fields>MasterLabel</fields>
         <fields>DeveloperName</fields>
         <fields>NamespacePrefix</fields>
+        <fields>Source_Field__c</fields>
+        <fields>Target_Field__c</fields>
+        <fields>Apex_Class__c</fields>
+        <fields>Apex_Class_Parameters__c</fields>
         <relatedList>Transformation_Field__mdt.Transformation__c</relatedList>
+        <sortField>MasterLabel</sortField>
+        <sortOrder>Asc</sortOrder>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
     <showHighlightsPanel>false</showHighlightsPanel>
     <showInteractionLogPanel>false</showInteractionLogPanel>
     <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>
     <showSubmitAndAttachButton>false</showSubmitAndAttachButton>
+    <summaryLayout>
+        <masterLabel>00hR00000047OQk</masterLabel>
+        <sizeX>4</sizeX>
+        <sizeY>0</sizeY>
+        <summaryLayoutStyle>Default</summaryLayoutStyle>
+    </summaryLayout>
 </Layout>
