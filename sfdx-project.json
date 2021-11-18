@@ -1,23 +1,25 @@
 {
-  "packageDirectories": [
-    {
-      "path": "force-app",
-      "default": true,
-      "package": "Nebula Object Transformer",
-      "versionName": "0.0.1",
-      "versionNumber": "0.0.1.NEXT",
-      "dependencies": [
+    "packageDirectories": [
         {
-          "package": "Nebula Core"
+            "path": "force-app",
+            "default": true,
+            "package": "Nebula Object Transformer",
+            "versionName": "0.0.1",
+            "versionNumber": "0.0.1.NEXT",
+            "dependencies": [
+                {
+                    "package": "Nebula Core"
+                }
+            ]
         }
-      ]
+    ],
+    "name": "Nebula Object Transformer",
+    "namespace": "nebc",
+    "sfdcLoginUrl": "https://login.salesforce.com",
+    "sourceApiVersion": "53.0",
+    "packageAliases": {
+        "Nebula Core": "04t6M000000kmLXQAY",
+        "Nebula Object Transformer": "0Ho6M0000008OKzSAM",
+        "Nebula Object Transformer@0.0.1-1": "04t6M000000kmLcQAI"
     }
-  ],
-  "name": "Nebula Object Transformer",
-  "namespace": "nebc",
-  "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "53.0",
-  "packageAliases": {
-    "Nebula Core": "04t6M000000kmKoQAI"
-  }
 }

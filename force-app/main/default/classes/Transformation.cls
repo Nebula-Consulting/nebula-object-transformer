@@ -13,6 +13,10 @@ global virtual inherited sharing class Transformation implements nebc.Function {
     private static nebc.Function metadataAndFunctionToTargetField = new nebc.Composition(new nebc.Left()).compose(new nebc.FieldFromSObject(Transformation_Field__mdt.Target_Field__c));
     private static nebc.Function metadataToSourceField = new nebc.FieldFromSObject(Transformation_Field__mdt.Source_Field__c);
 
+    /**
+     * @param transformationName The DeveloperName of a Transformation__mdt record to use
+     * @param targetType The type to construct as output, can be an SObject or Map<String, Object>
+     */
     global Transformation(String transformationName, Type targetType) {
         this(
         [
@@ -58,6 +62,11 @@ global virtual inherited sharing class Transformation implements nebc.Function {
         }
     }
 
+    /**
+     * Gets the fields used in the transformation in case they are required for a SOQL query or similar
+     *
+     * @return the fields used in the transformation
+     */
     global Set<String> getSourceFields() {
         return new nebc.LazyIterator(metadataAndFunction)
                 .mapValues(new nebc.Left())
