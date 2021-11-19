@@ -20,7 +20,7 @@ global virtual inherited sharing class Transformation implements nebc.Function {
     global Transformation(String transformationName, Type targetType) {
         this(
         [
-                SELECT Source_Field__c, Target_Field__c, Apex_Class__c
+                SELECT Source_Field__c, Target_Field__c, Apex_Class__c, Apex_Class_Parameters__c
                 FROM Transformation_Field__mdt
                 WHERE Transformation__r.DeveloperName = :transformationName
         ],
