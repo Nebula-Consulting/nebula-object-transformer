@@ -32,7 +32,7 @@ global virtual inherited sharing class Transformation implements nebc.Function {
         this.metadataAndFunction = (List<nebc.Tuple>)new nebc.LazySObjectIterator(transformationMetadata)
                 .putIf(new nebc.IsNull(Transformation_Field__mdt.Source_Field__c), Transformation_Field__mdt.Source_Field__c, 'Id')
                 .putIf(new nebc.IsNull(Transformation_Field__mdt.Apex_Class__c), Transformation_Field__mdt.Apex_Class__c, nebc.IdentityFunction.class.getName())
-                .mapValues(new nebc.ToTwoTuple(new nebc.IdentityFunction(), new NewTransformFunctionInstance()))
+                .mapValues(new nebc.ToTwoTuple(new nebc.IdentityFunction(), new MetadataToTransformFunctionInstance()))
                 .toList(new List<nebc.Tuple>());
         this.targetType = targetType;
     }
@@ -40,26 +40,12 @@ global virtual inherited sharing class Transformation implements nebc.Function {
     global Object call(Object inputToTransform) {
         Object result = targetType.newInstance();
 
-        nebc.Function metadataToValue = new nebc.Composition(metadataToSourceField)
-                .compose(new nebc.GetFrom(inputToTransform));
-
-        nebc.Function metadataAndFunctionToTransformedValue = new nebc.Composition(new nebc.TwoTupleMapValues(metadataToValue, new nebc.IdentityFunction()))
-                .compose(new ApplyRightToLeft());
-
         new nebc.LazySObjectIterator(metadataAndFunction)
-                .mapValues(new nebc.TupleMapFunction(metadataAndFunctionToTargetField, metadataAndFunctionToTransformedValue)
-                .setTupleNewInstance(nebc.TwoTuple.newInstance))
+                .mapValues(new nebc.TupleMapFunction(metadataAndFunctionToTargetField, getMetadataAndFunctionToTransformedValue(inputToTransform))
+                    .setTupleNewInstance(nebc.TwoTuple.newInstance))
                 .forEach(new nebc.PutTo(result));
 
         return result;
-    }
-
-    private class ApplyRightToLeft implements nebc.Function {
-
-        public Object call(Object o) {
-            nebc.Tuple tuple = (nebc.Tuple)o;
-            return ((nebc.Function)tuple.get(1)).call(tuple.get(0));
-        }
     }
 
     /**
@@ -74,7 +60,23 @@ global virtual inherited sharing class Transformation implements nebc.Function {
                 .toSet(new Set<String>());
     }
 
-    private class NewTransformFunctionInstance implements nebc.Function {
+    private nebc.Function getMetadataAndFunctionToTransformedValue(Object inputToTransform) {
+        nebc.Function metadataToValue = new nebc.Composition(metadataToSourceField)
+                .compose(new nebc.GetFrom(inputToTransform));
+
+        return new nebc.Composition(new nebc.TwoTupleMapValues(metadataToValue, new nebc.IdentityFunction()))
+                .compose(new ApplyRightToLeft());
+    }
+
+    private class ApplyRightToLeft implements nebc.Function {
+
+        public Object call(Object o) {
+            nebc.Tuple tuple = (nebc.Tuple)o;
+            return ((nebc.Function)tuple.get(1)).call(tuple.get(0));
+        }
+    }
+
+    private class MetadataToTransformFunctionInstance implements nebc.Function {
 
         public Object call(Object o) {
             Transformation_Field__mdt transformationFieldMetadata = (Transformation_Field__mdt)o;
