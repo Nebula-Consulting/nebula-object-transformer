@@ -60,6 +60,11 @@ global virtual inherited sharing class Transformation implements nebc.Function {
                 .toSet(new Set<String>());
     }
 
+    /*
+     * Returns a function that takes <metadata, transformationFunction>, turns it into
+     * <inputValue, transformationFunction>, then calls transformationFunction(inputValue) to return a single,
+     * transformed value.
+     */
     private nebc.Function getMetadataAndFunctionToTransformedValue(Object inputToTransform) {
         nebc.Function metadataToValue = new nebc.Composition(metadataToSourceField)
                 .compose(new nebc.GetFrom(inputToTransform));
