@@ -41,7 +41,7 @@ global virtual inherited sharing class Transformation implements nebc.Function {
         Object result = targetType.newInstance();
 
         new nebc.LazySObjectIterator(metadataAndFunction)
-                .mapValues(new nebc.TupleMapFunction(metadataAndFunctionToTargetField, getMetadataAndFunctionToTransformedValue(inputToTransform))
+                .mapValues(new nebc.TupleMapFunction(metadataAndFunctionToTargetField, new MetadataAndFunctionToTransformedValue(inputToTransform))
                     .setTupleNewInstance(nebc.TwoTuple.newInstance))
                 .forEach(new nebc.PutTo(result));
 
@@ -60,24 +60,20 @@ global virtual inherited sharing class Transformation implements nebc.Function {
                 .toSet(new Set<String>());
     }
 
-    /*
-     * Returns a function that takes <metadata, transformationFunction>, turns it into
-     * <inputValue, transformationFunction>, then calls transformationFunction(inputValue) to return a single,
-     * transformed value.
-     */
-    private nebc.Function getMetadataAndFunctionToTransformedValue(Object inputToTransform) {
-        nebc.Function metadataToValue = new nebc.Composition(metadataToSourceField)
-                .compose(new nebc.GetFrom(inputToTransform));
+    private class MetadataAndFunctionToTransformedValue implements nebc.Function {
 
-        return new nebc.Composition(new nebc.TwoTupleMapValues(metadataToValue, new nebc.IdentityFunction()))
-                .compose(new ApplyRightToLeft());
-    }
+        private nebc.Function metadataToValue;
 
-    private class ApplyRightToLeft implements nebc.Function {
+        public MetadataAndFunctionToTransformedValue(Object inputToTransform) {
+            metadataToValue = new nebc.Composition(metadataToSourceField)
+                    .compose(new nebc.GetFrom(inputToTransform));
+        }
 
         public Object call(Object o) {
-            nebc.Tuple tuple = (nebc.Tuple)o;
-            return ((nebc.Function)tuple.get(1)).call(tuple.get(0));
+            nebc.Tuple metadataAndFunction = (nebc.Tuple)o;
+            Object value = metadataToValue.call(metadataAndFunction.get(0));
+            nebc.Function function = (nebc.Function)metadataAndFunction.get(1);
+            return function.call(value);
         }
     }
 
