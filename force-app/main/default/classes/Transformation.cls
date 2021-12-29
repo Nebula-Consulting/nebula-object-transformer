@@ -11,7 +11,6 @@ global virtual inherited sharing class Transformation implements nebc.Function {
     private Type targetType;
 
     private static nebc.Function metadataAndFunctionToTargetField = new nebc.Composition(new nebc.Left()).compose(new nebc.FieldFromSObject(Transformation_Field__mdt.Target_Field__c));
-    private static nebc.Function metadataToSourceField = new nebc.FieldFromSObject(Transformation_Field__mdt.Source_Field__c);
 
     /**
      * @param transformationName The DeveloperName of a Transformation__mdt record to use
@@ -40,8 +39,15 @@ global virtual inherited sharing class Transformation implements nebc.Function {
     global Object call(Object inputToTransform) {
         Object result = targetType.newInstance();
 
+        nebc.Function metadataAndFunctionToInputValue = new nebc.Composition(new Left())
+                    .compose(new FieldFromSObject(Transformation_Field__mdt.Source_Field__c))
+                    .compose(new nebc.GetFrom(inputToTransform));
+
+        nebc.Function metadataAndFunctionToTransformedValue = new Composition(new TupleMapFunction(metadataAndFunctionToInputValue, new Right()))
+                .compose(new ApplyFunctionInPosition(1).toPosition(0));
+
         new nebc.LazySObjectIterator(metadataAndFunction)
-                .mapValues(new nebc.TupleMapFunction(metadataAndFunctionToTargetField, new MetadataAndFunctionToTransformedValue(inputToTransform))
+                .mapValues(new nebc.TupleMapFunction(metadataAndFunctionToTargetField, metadataAndFunctionToTransformedValue)
                     .setTupleNewInstance(nebc.TwoTuple.newInstance))
                 .forEach(new nebc.PutTo(result));
 
@@ -60,20 +66,23 @@ global virtual inherited sharing class Transformation implements nebc.Function {
                 .toSet(new Set<String>());
     }
 
-    private class MetadataAndFunctionToTransformedValue implements nebc.Function {
+    private class ApplyFunctionInPosition implements nebc.Function {
 
-        private nebc.Function metadataToValue;
+        private Integer functionIndex;
+        private Integer valueIndex;
 
-        public MetadataAndFunctionToTransformedValue(Object inputToTransform) {
-            metadataToValue = new nebc.Composition(metadataToSourceField)
-                    .compose(new nebc.GetFrom(inputToTransform));
+        public ApplyFunctionInPosition(Integer functionIndex) {
+            this.functionIndex = functionIndex;
+        }
+
+        public ApplyFunctionInPosition toPosition(Integer valueIndex) {
+            this.valueIndex = valueIndex;
+            return this;
         }
 
         public Object call(Object o) {
-            nebc.Tuple metadataAndFunction = (nebc.Tuple)o;
-            Object value = metadataToValue.call(metadataAndFunction.get(0));
-            nebc.Function function = (nebc.Function)metadataAndFunction.get(1);
-            return function.call(value);
+            nebc.Tuple tuple = (nebc.Tuple)o;
+            return ((nebc.Function)tuple.get(functionIndex)).call(tuple.get(valueIndex));
         }
     }
 
@@ -82,7 +91,7 @@ global virtual inherited sharing class Transformation implements nebc.Function {
         public Object call(Object o) {
             Transformation_Field__mdt transformationFieldMetadata = (Transformation_Field__mdt)o;
             Type transformationType = nebc.TypeLoader.getType(transformationFieldMetadata.Apex_Class__c);
-            return (nebc.Function) nebc.TypeLoader.getInstance(transformationType, transformationFieldMetadata.Apex_Class_Parameters__c);
+            return nebc.TypeLoader.getInstance(transformationType, transformationFieldMetadata.Apex_Class_Parameters__c);
         }
     }
 }
