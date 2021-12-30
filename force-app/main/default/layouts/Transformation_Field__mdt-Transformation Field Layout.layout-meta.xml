@@ -30,6 +30,10 @@
                 <behavior>Edit</behavior>
                 <field>Apex_Class_Parameters__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Apex_Class_Receives__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>

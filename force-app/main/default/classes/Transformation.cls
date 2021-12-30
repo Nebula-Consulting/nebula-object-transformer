@@ -39,11 +39,16 @@ global virtual inherited sharing class Transformation implements nebc.Function {
     global Object call(Object inputToTransform) {
         Object result = targetType.newInstance();
 
-        nebc.Function metadataAndFunctionToInputValue = new nebc.Composition(new Left())
-                    .compose(new FieldFromSObject(Transformation_Field__mdt.Source_Field__c))
-                    .compose(new nebc.GetFrom(inputToTransform));
+        nebc.Function metadataAndFunctionToFunctionInput = new IfThen(
+                new IsValueTransform(),
+                new nebc.Composition(new nebc.Left())
+                        .compose(new FieldFromSObject(Transformation_Field__mdt.Source_Field__c))
+                        .compose(new nebc.GetFrom(inputToTransform)))
+                .elseFunction(
+                        new nebc.ToTwoTuple(new nebc.Left(), new nebc.ConstantFunction(inputToTransform))
+                );
 
-        nebc.Function metadataAndFunctionToTransformedValue = new Composition(new TupleMapFunction(metadataAndFunctionToInputValue, new Right()))
+        nebc.Function metadataAndFunctionToTransformedValue = new Composition(new TupleMapFunction(metadataAndFunctionToFunctionInput, new Right()))
                 .compose(new ApplyFunctionInPosition(1).toPosition(0));
 
         new nebc.LazySObjectIterator(metadataAndFunction)
@@ -92,6 +97,15 @@ global virtual inherited sharing class Transformation implements nebc.Function {
             Transformation_Field__mdt transformationFieldMetadata = (Transformation_Field__mdt)o;
             Type transformationType = nebc.TypeLoader.getType(transformationFieldMetadata.Apex_Class__c);
             return nebc.TypeLoader.getInstance(transformationType, transformationFieldMetadata.Apex_Class_Parameters__c);
+        }
+    }
+
+    private class IsValueTransform implements nebc.BooleanFunction {
+
+        public Boolean isTrueFor(Object o) {
+            Transformation_Field__mdt transformationFieldMetadata = (Transformation_Field__mdt)((nebc.Tuple)o).get(0);
+
+            return transformationFieldMetadata.Apex_Class__c != null && transformationFieldMetadata.Apex_Class_Receives__c != 'Whole Object';
         }
     }
 }

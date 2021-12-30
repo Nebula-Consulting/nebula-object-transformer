@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Apex_Class_Receives__c</fullName>
+    <defaultValue>&apos;Value&apos;</defaultValue>
+    <description>If an Apex Class is specified, this value determines whether it is called with the value of the input field or a tuple of the metadata record and the whole input object</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>If an Apex Class is specified, this value determines whether it is called with the value of the input field or a tuple of the metadata record and the whole input object</inlineHelpText>
+    <label>Apex Class Receives</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Value</fullName>
+                <default>true</default>
+                <label>Value</label>
+            </value>
+            <value>
+                <fullName>Whole Object</fullName>
+                <default>false</default>
+                <label>Whole Object</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
