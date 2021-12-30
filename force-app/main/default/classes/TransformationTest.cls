@@ -104,7 +104,7 @@ private class TransformationTest {
     static void transformSObjectToMap() {
         List<Transformation_Field__mdt> transformationFieldMetadata = new List<Transformation_Field__mdt> {
                 new Transformation_Field__mdt(Source_Field__c = 'FirstName', Target_Field__c = 'first_name'),
-                new Transformation_Field__mdt(Source_Field__c = 'Birthdate', Target_Field__c = 'date_of_birth', Apex_Class__c = 'nebc.JsonSerialize')
+                new Transformation_Field__mdt(Source_Field__c = 'Birthdate', Target_Field__c = 'date_of_birth', Apex_Class__c = 'JsonSerialize')
         };
 
         Transformation thisTransformation = new Transformation(transformationFieldMetadata,  Map<String, Object>.class);
@@ -173,10 +173,10 @@ private class TransformationTest {
         System.assertEquals(person.get('last_name'), newLead.LastName);
     }
 
-    public class FirstNameAndLastName implements nebc.Function {
+    public class FirstNameAndLastName implements Function {
 
         public Object call(Object o) {
-            nebc.Tuple tuple = (nebc.Tuple)o;
+            Tuple tuple = (Tuple)o;
             SObject inputSObject = (SObject)tuple.get(1);
 
             return inputSObject.get('FirstName') + ' ' + inputSObject.get('LastName');

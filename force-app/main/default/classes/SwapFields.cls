@@ -4,7 +4,7 @@
  * @description Function to swap the values in two fields of an SObject
  */
 
-public with sharing class SwapFields implements nebc.Function {
+public with sharing class SwapFields implements Function {
 
     private SObjectField field1;
     private SObjectField field2;

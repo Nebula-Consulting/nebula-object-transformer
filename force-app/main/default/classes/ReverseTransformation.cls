@@ -18,7 +18,7 @@ global inherited sharing class ReverseTransformation extends Transformation {
 
     @TestVisible
     private ReverseTransformation(List<Transformation_Field__mdt> transformationFields, Type targetType) {
-        super(new nebc.LazySObjectIterator(transformationFields.deepClone())
+        super(new LazySObjectIterator(transformationFields.deepClone())
                 .mapValuesT(new SwapFields(Transformation_Field__mdt.Source_Field__c, Transformation_Field__mdt.Target_Field__c))
                 .toList(new List<Transformation_Field__mdt>()), targetType);
     }
