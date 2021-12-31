@@ -157,6 +157,24 @@ private class TransformationTest {
     }
 
     @IsTest
+    static void deepSObjectToMap() {
+        List<Transformation_Field__mdt> transformationFieldMetadata = new List<Transformation_Field__mdt> {
+                new Transformation_Field__mdt(Source_Field__c = 'FirstName', Target_Field__c = 'first_name'),
+                new Transformation_Field__mdt(Source_Field__c = 'LastName', Target_Field__c = 'last_name'),
+                new Transformation_Field__mdt(Source_Field__c = 'Account.Name', Target_Field__c = 'company')
+        };
+
+        Transformation thisTransformation = new Transformation(transformationFieldMetadata,  Map<String, Object>.class);
+
+        Contact theContact = new Contact(FirstName = 'A', LastName = 'B', Account = new Account(Name = 'ACME'));
+        Map<String, Object> newMap = (Map<String, Object>)thisTransformation.call(theContact);
+
+        System.assertEquals(theContact.FirstName, newMap.get('first_name'));
+        System.assertEquals(theContact.LastName, newMap.get('last_name'));
+        System.assertEquals(theContact.Account.Name, newMap.get('company'));
+    }
+
+    @IsTest
     static void transformDeepMapToSObject() {
         List<Transformation_Field__mdt> transformationFieldMetadata = new List<Transformation_Field__mdt> {
                 new Transformation_Field__mdt(Source_Field__c = 'person.first_name', Target_Field__c = 'FirstName' ),
