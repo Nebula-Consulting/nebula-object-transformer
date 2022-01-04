@@ -195,6 +195,15 @@ private class TransformationTest {
         System.assertEquals(person.get('last_name'), newLead.LastName);
     }
 
+    @IsTest
+    @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveAsserts') // Can't effectively test this in a package
+    static void sillyCoverage() {
+        new Transformation('A_Record_Name', Account.class);
+        new ReverseTransformation('A_Record_Name', Account.class);
+
+        // Nothing to assert, we don't know what metadata exists in the system
+    }
+
     public class FirstNameAndLastName implements Function {
 
         public Object call(Object o) {
