@@ -20,6 +20,10 @@ private class TransformationTest {
 
         System.assertEquals(theLead.FirstName, newContact.FirstName);
         System.assertEquals(theLead.LastName, newContact.LastName);
+        Set<String> fields = thisTransformation.getSourceFields();
+        System.assertEquals(2, fields.size());
+        System.assert(fields.contains('FirstName'));
+        System.assert(fields.contains('LastName'));
     }
 
     @IsTest
