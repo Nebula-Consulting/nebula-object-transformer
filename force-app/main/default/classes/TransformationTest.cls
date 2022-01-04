@@ -183,7 +183,7 @@ private class TransformationTest {
 
         Transformation thisTransformation = new Transformation(transformationFieldMetadata,  Lead.class);
 
-        Map<String, Object> theMap = new Map<String, Object>{'person' => new Map<String, Object> { 'FirstName' => 'A', 'LastName' => 'B'} };
+        Map<String, Object> theMap = new Map<String, Object>{'person' => new Map<String, Object> { 'first_name' => 'A', 'last_name' => 'B'} };
         Lead newLead = (Lead)thisTransformation.call(theMap);
 
         Map<String, Object> person = (Map<String, Object>)theMap.get('person');
