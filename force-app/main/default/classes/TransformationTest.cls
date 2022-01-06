@@ -129,7 +129,7 @@ private class TransformationTest {
 
         Transformation thisTransformation = new Transformation(transformationFieldMetadata,  Map<String, Object>.class);
 
-        Contact theContact = new Contact(FirstName = 'A', Birthdate = Date.today());
+        Contact theContact = new Contact(FirstName = 'A', LastName = 'B');
         Map<String, Object> newMap = (Map<String, Object>)thisTransformation.call(theContact);
 
         System.assertEquals(theContact.FirstName, newMap.get('first_name'));
