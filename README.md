@@ -2,17 +2,17 @@
 
 Transform your objects! Configure your transformations using custom metadata records. 
 
-A common requirement, particularly in integrations is to be able to map instances of one type of objects into another. 
-For example, we might want to map a Contact record into a JSON object represented by a map. Or we might want to do the 
-reverse. Or we might need to map between SObjects, or between JSON objects. As part of the mapping, we might need to 
-change the field names and/or transform the values.
+A common requirement, particularly in integrations is to be able to transform instances of one type of objects into another. 
+For example, we might want to transform a Contact record into a JSON object represented by a map. Or we might want to do the 
+reverse. Or we might need to transform between SObjects, or between JSON objects. As part of the transformation, we might need to 
+change the field names and/or apply functions to the values.
 
 This library provides a generic method to do all of that, driven by custom metadata records.
 
 Since it is built on top of [Nebula Core](https://github.com/aidan-harding/nebula-core), it supports deep references in 
 the field names. e.g. a field reference on Contact could be 
 `Account.Name`. As a source field, this will be read correctly for an SObject or Map, as long as the data is actually 
-there. Similarly, this format can be used as a target in JSON objects to implicitly constructed a nested object.   
+there. Similarly, this format can be used as a target in JSON objects to implicitly construct a nested object.   
 
 ## Installation
 
@@ -130,8 +130,8 @@ Custom Metadata (Contact_deep_to_JSON):
 
 ### Transformation functions
 
-When some values need to be transformed, we can provide the name of an Apex class to perform the transformation. In this 
-example, we are taking a Date from Contact and transforming it into a String that can be used in JSON:
+When some values need to be modified during the transformation, we can provide the name of an Apex class to perform 
+the transformation. In this example, we are taking a Date from Contact and transforming it into a String that can be used in JSON:
 
 Custom Metadata (Contact_to_JSON_transform):
 
@@ -205,11 +205,11 @@ More direct support for constants could be useful in a future version.
 
 Custom Metadata (Lead_to_Contact_generate):
 
-| Source Field | Target Field | Apex Class          | Apex Class Parameters |
-|--------------|--------------|---------------------|-----------------------|
-| FirstName    | FirstName    |                     |                       |
-| LastName     | LastName     |                     |                       |
-|              | Description  | nebc.StringConstant | { "value": "foo"}     |
+| Source Field | Target Field | Apex Class          | Apex Class Parameters              |
+|--------------|--------------|---------------------|------------------------------------|
+| FirstName    | FirstName    |                     |                                    |
+| LastName     | LastName     |                     |                                    |
+|              | Description  | nebc.StringConstant | { "value": "a metadata constant!"} |
 
     Transformation thisTransformation = new Transformation('Lead_to_Contact_generate', Contact.class);
 
@@ -218,8 +218,75 @@ Custom Metadata (Lead_to_Contact_generate):
 
     System.assertEquals(theLead.FirstName, newContact.FirstName);
     System.assertEquals(theLead.LastName, newContact.LastName);
-    System.assertEquals('foo', newContact.Description);
+    System.assertEquals('a metadata constant!', newContact.Description);
 
+### Whole-object transformation functions TBD
+
+Sometimes the function to modify values during the transformation might need the whole input object to calculate an 
+output value e.g. for concatenating two text/string fields into one, or for doing a calculation. In that case, you can 
+set the "Apex Class Receives" Parameter in the custom metadata. In this example, we concatenate the first and last name 
+into the description field. 
+
+Custom Metadata (Lead_to_Contact_whole_object):
+
+| Source Field | Target Field | Apex Class           | Apex Class Receives |
+|--------------|--------------|----------------------|---------------------|
+| FirstName    | FirstName    |
+| LastName     | LastName     |
+| FirstName    | Description  | FirstNameAndLastName | Whole Object        |
+
+    nebc.Transformation thisTransformation = new nebc.Transformation('Lead_to_Contact_whole_object', Contact.class);
+
+    Lead theLead = new Lead(FirstName = 'A', LastName = 'B');
+    Contact newContact = (Contact)thisTransformation.call(theLead);
+
+    System.assertEquals(theLead.FirstName, newContact.FirstName);
+    System.assertEquals(theLead.LastName, newContact.LastName);
+    System.assertEquals(theLead.FirstName + ' ' + theLead.LastName, newContact.Description);
+
+In this case, the Apex Class will receive a `nebc.Tuple` containing the metadata for this field, and the whole input 
+object i.e. <nebc__Transformation_Field__mdt, Lead>. So, the implementation of `FirstNameAndLastName` is as follows
+
+    global class FirstNameAndLastName implements nebc.Function {
+
+        public Object call(Object o) {
+            nebc.Tuple tuple = (nebc.Tuple)o;
+            SObject inputSObject = (SObject)tuple.get(1);
+
+            return inputSObject.get('FirstName') + ' ' + inputSObject.get('LastName');
+        }
+    }
+
+
+### Reverse transformations
+
+You can easily create a reverse transformation using the same metadata as for the forwards transformation. So, we can 
+re-use the metadata from [Contact to JSON](#contact-to-json) to do a round-trip
+
+Custom Metadata (Contact_to_JSON):
+
+| Source Field | Target Field | 
+|--------------|--------------|
+| FirstName    | first_name   |
+| LastName     | last_name    | 
+
+    nebc.Transformation thisTransformation = new nebc.Transformation('Contact_to_JSON',  Map<String, Object>.class);
+
+    Contact theContact = new Contact(FirstName = 'A', Birthdate = Date.today());
+    Map<String, Object> newMap = (Map<String, Object>)thisTransformation.call(theContact);
+
+    System.assertEquals(theContact.FirstName, newMap.get('first_name'));
+    System.assertEquals(theContact.LastName, newMap.get('last_name'));
+
+    nebc.Transformation reverseTransformation = new nebc.ReverseTransformation('Contact_to_JSON', Contact.class);
+
+    Contact roundTripContact = (Contact)reverseTransformation.call(newMap);
+
+    System.assertEquals(theContact.FirstName, roundTripContact.FirstName);
+    System.assertEquals(theContact.LastName, roundTripContact.LastName);
+
+This offers the same functionality as a forward transformation. It simply swaps some metadata fields around in the 
+constructor.
 
 ## How to query for transformation
 
