@@ -244,7 +244,7 @@ private class TransformationTest {
 
     public class DeserializeToNamedType implements Function {
 
-        private String typeName; // Assigned be via CMDT parameters
+        private String typeName; // Assigned via CMDT parameters
         private Type type {
             get {
                 if(type == null) {

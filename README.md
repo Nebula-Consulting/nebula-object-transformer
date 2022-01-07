@@ -205,11 +205,11 @@ More direct support for constants could be useful in a future version.
 
 Custom Metadata (Lead_to_Contact_generate):
 
-| Source Field | Target Field | Apex Class          | Apex Class Parameters              |
-|--------------|--------------|---------------------|------------------------------------|
-| FirstName    | FirstName    |                     |                                    |
-| LastName     | LastName     |                     |                                    |
-|              | Description  | nebc.StringConstant | { "value": "a metadata constant!"} |
+| Source Field | Target Field | Apex Class          | Apex Class Parameters                |
+|--------------|--------------|---------------------|--------------------------------------|
+| FirstName    | FirstName    |                     |                                      |
+| LastName     | LastName     |                     |                                      |
+|              | Description  | nebc.StringConstant | `{ "value": "a metadata constant!"}` |
 
     Transformation thisTransformation = new Transformation('Lead_to_Contact_generate', Contact.class);
 
@@ -287,6 +287,57 @@ Custom Metadata (Contact_to_JSON):
 
 This offers the same functionality as a forward transformation. It simply swaps some metadata fields around in the 
 constructor.
+
+### Reverse transformation with transformation function
+
+To reverse a transformation where you provided an Apex Class to transform the data, you may need to provide a 
+Reverse Apex Class in the custom metadata. For example, we can do a round trip on [Transformation functions](#transformation-functions)
+from earlier.
+
+Custom Metadata (Contact_to_JSON_transform_reversible):
+
+| Source Field | Target Field  | Apex Class         | Reverse Apex Class     | Reverse Apex Class Parameters |
+|--------------|---------------|--------------------|------------------------|-------------------------------|
+| FirstName    | first_name    |
+| LastName     | last_name     |
+| Birthdate    | date_of_birth | nebc.JsonSerialize | DeserializeToNamedType | `{ "typeName": "Date" }`      |
+
+
+    nebc.Transformation thisTransformation = new nebc.Transformation(transformationFieldMetadata,  Map<String, Object>.class);
+
+    Contact theContact = new Contact(FirstName = 'A', Birthdate = Date.today());
+    Map<String, Object> newMap = (Map<String, Object>)thisTransformation.call(theContact);
+
+    System.assertEquals(theContact.FirstName, newMap.get('first_name'));
+    System.assertEquals(JSON.serialize(theContact.Birthdate), newMap.get('date_of_birth'));
+
+    nebc.Transformation reverseTransformation = new nebc.ReverseTransformation(transformationFieldMetadata, Contact.class);
+
+    Contact roundTripContact = (Contact)reverseTransformation.call(newMap);
+
+    System.assertEquals(theContact.FirstName, roundTripContact.FirstName);
+    System.assertEquals(theContact.Birthdate, roundTripContact.Birthdate);
+
+Where the actual transformation function is defined as:
+
+    public class DeserializeToNamedType implements Function {
+
+        private String typeName; // Assigned via CMDT parameters
+        private Type type {
+            get {
+                if(type == null) {
+                    type = TypeLoader.getType(typeName);
+                }
+                return type;
+            }
+            set;
+        }
+
+        public Object call(Object o) {
+            return JSON.deserialize((String)o, type);
+        }
+    }
+
 
 ## How to query for transformation
 
