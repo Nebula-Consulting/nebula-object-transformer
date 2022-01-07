@@ -57,15 +57,17 @@
         <style>CustomLinks</style>
     </layoutSections>
     <relatedLists>
-        <fields>MasterLabel</fields>
         <fields>DeveloperName</fields>
-        <fields>NamespacePrefix</fields>
         <fields>Source_Field__c</fields>
         <fields>Target_Field__c</fields>
         <fields>Apex_Class__c</fields>
         <fields>Apex_Class_Parameters__c</fields>
+        <fields>Apex_Class_Receives__c</fields>
+        <fields>Reverse_Apex_Class__c</fields>
+        <fields>Reverse_Apex_Class_Parameters__c</fields>
+        <fields>Reverse_Apex_Class_Receives__c</fields>
         <relatedList>Transformation_Field__mdt.Transformation__c</relatedList>
-        <sortField>MasterLabel</sortField>
+        <sortField>Source_Field__c</sortField>
         <sortOrder>Asc</sortOrder>
     </relatedLists>
     <showEmailCheckbox>false</showEmailCheckbox>
@@ -74,7 +76,7 @@
     <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>
     <showSubmitAndAttachButton>false</showSubmitAndAttachButton>
     <summaryLayout>
-        <masterLabel>00hR00000047OQk</masterLabel>
+        <masterLabel>00hJ0000005hIAh</masterLabel>
         <sizeX>4</sizeX>
         <sizeY>0</sizeY>
         <summaryLayoutStyle>Default</summaryLayoutStyle>

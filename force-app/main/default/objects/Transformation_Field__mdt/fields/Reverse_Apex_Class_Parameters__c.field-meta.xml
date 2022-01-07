@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Reverse_Apex_Class_Parameters__c</fullName>
+    <description>JSON values to be used to deserialise an instance of the given Reverse Apex Class, parameterising it</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>JSON values to be used to deserialise an instance of the given Reverse Apex Class, parameterising it</inlineHelpText>
+    <label>Reverse Apex Class Parameters</label>
+    <required>false</required>
+    <type>TextArea</type>
+</CustomField>

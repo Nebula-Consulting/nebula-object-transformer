@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Reverse_Apex_Class__c</fullName>
+    <description>A class implementing nebc.Function to be run on values as they go from destination to source</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>A class implementing nebc.Function to be run on values as they go from destination to source</inlineHelpText>
+    <label>Reverse Apex Class</label>
+    <length>255</length>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

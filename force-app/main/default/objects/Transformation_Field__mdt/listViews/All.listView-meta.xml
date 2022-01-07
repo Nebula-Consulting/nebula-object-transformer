@@ -8,6 +8,10 @@
     <columns>Target_Field__c</columns>
     <columns>Apex_Class__c</columns>
     <columns>Apex_Class_Parameters__c</columns>
+    <columns>Apex_Class_Receives__c</columns>
+    <columns>Reverse_Apex_Class__c</columns>
+    <columns>Reverse_Apex_Class_Parameters__c</columns>
+    <columns>Reverse_Apex_Class_Receives__c</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>
 </ListView>

@@ -144,6 +144,34 @@ private class TransformationTest {
     }
 
     @IsTest
+    static void roundTripWithTransformation() {
+        List<Transformation_Field__mdt> transformationFieldMetadata = new List<Transformation_Field__mdt> {
+                new Transformation_Field__mdt(Source_Field__c = 'FirstName', Target_Field__c = 'first_name'),
+                new Transformation_Field__mdt(
+                        Source_Field__c = 'Birthdate',
+                        Target_Field__c = 'date_of_birth',
+                        Apex_Class__c = 'JsonSerialize',
+                        Reverse_Apex_Class__c = DeserializeToNamedType.class.getName(),
+                        Reverse_Apex_Class_Parameters__c = '{ "typeName": "Date" }')
+        };
+
+        Transformation thisTransformation = new Transformation(transformationFieldMetadata,  Map<String, Object>.class);
+
+        Contact theContact = new Contact(FirstName = 'A', Birthdate = Date.today());
+        Map<String, Object> newMap = (Map<String, Object>)thisTransformation.call(theContact);
+
+        System.assertEquals(theContact.FirstName, newMap.get('first_name'));
+        System.assertEquals(JSON.serialize(theContact.Birthdate), newMap.get('date_of_birth'));
+
+        Transformation reverseTransformation = new ReverseTransformation(transformationFieldMetadata, Contact.class);
+
+        Contact roundTripContact = (Contact)reverseTransformation.call(newMap);
+
+        System.assertEquals(theContact.FirstName, roundTripContact.FirstName);
+        System.assertEquals(theContact.Birthdate, roundTripContact.Birthdate);
+    }
+
+    @IsTest
     static void transformSObjectToDeepMap() {
         List<Transformation_Field__mdt> transformationFieldMetadata = new List<Transformation_Field__mdt> {
                 new Transformation_Field__mdt(Source_Field__c = 'FirstName', Target_Field__c = 'person.first_name'),
@@ -211,6 +239,24 @@ private class TransformationTest {
             SObject inputSObject = (SObject)tuple.get(1);
 
             return inputSObject.get('FirstName') + ' ' + inputSObject.get('LastName');
+        }
+    }
+
+    public class DeserializeToNamedType implements Function {
+
+        private String typeName; // Assigned be via CMDT parameters
+        private Type type {
+            get {
+                if(type == null) {
+                    type = TypeLoader.getType(typeName);
+                }
+                return type;
+            }
+            set;
+        }
+
+        public Object call(Object o) {
+            return JSON.deserialize((String)o, type);
         }
     }
 }
