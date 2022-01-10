@@ -58,6 +58,7 @@
     </layoutSections>
     <relatedLists>
         <fields>DeveloperName</fields>
+        <fields>MasterLabel</fields>
         <fields>Source_Field__c</fields>
         <fields>Target_Field__c</fields>
         <fields>Apex_Class__c</fields>
