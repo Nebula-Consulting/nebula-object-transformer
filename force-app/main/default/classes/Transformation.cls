@@ -19,7 +19,8 @@ global virtual inherited sharing class Transformation implements Function {
     global Transformation(String transformationName, Type targetType) {
         this(
         [
-                SELECT Source_Field__c, Target_Field__c, Apex_Class__c, Apex_Class_Parameters__c
+                SELECT Source_Field__c, Target_Field__c, Apex_Class__c, Apex_Class_Parameters__c, Apex_Class_Receives__c,
+                        Reverse_Apex_Class__c, Reverse_Apex_Class_Parameters__c, Reverse_Apex_Class_Receives__c
                 FROM Transformation_Field__mdt
                 WHERE Transformation__r.DeveloperName = :transformationName
         ],
