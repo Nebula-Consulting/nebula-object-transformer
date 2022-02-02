@@ -8,7 +8,7 @@
 global virtual inherited sharing class Transformation implements Function {
 
     private List<Tuple> metadataAndFunction;
-    private Type targetType;
+    private Iterator<Object> targetObjectIterator;
 
     private static Function metadataAndFunctionToTargetField = new Composition(new Left()).compose(new FieldFromSObject(Transformation_Field__mdt.Target_Field__c));
 
@@ -27,6 +27,21 @@ global virtual inherited sharing class Transformation implements Function {
                 targetType);
     }
 
+    /**
+     * @param transformationName The DeveloperName of a Transformation__mdt record to use
+     * @param targetObjectIterator An iterator of target objects to map to. Can be an SObjects or Map<String, Object>s
+     */
+    global Transformation(String transformationName, Iterator<Object> targetObjectIterator) {
+        this(
+        [
+                SELECT Source_Field__c, Target_Field__c, Apex_Class__c, Apex_Class_Parameters__c, Apex_Class_Receives__c,
+                        Reverse_Apex_Class__c, Reverse_Apex_Class_Parameters__c, Reverse_Apex_Class_Receives__c
+                FROM Transformation_Field__mdt
+                WHERE Transformation__r.DeveloperName = :transformationName
+        ],
+                targetObjectIterator);
+    }
+
     @TestVisible
     protected Transformation(List<Transformation_Field__mdt> transformationMetadata, Type targetType) {
         this.metadataAndFunction = (List<Tuple>)new LazySObjectIterator(transformationMetadata)
@@ -34,11 +49,21 @@ global virtual inherited sharing class Transformation implements Function {
                 .putIf(new IsNull(Transformation_Field__mdt.Apex_Class__c), Transformation_Field__mdt.Apex_Class__c, IdentityFunction.class.getName())
                 .mapValues(new ToTwoTuple(new IdentityFunction(), new MetadataToTransformFunctionInstance()))
                 .toList(new List<Tuple>());
-        this.targetType = targetType;
+        this.targetObjectIterator = new NewInstanceGenerator(targetType);
+    }
+
+    @TestVisible
+    protected Transformation(List<Transformation_Field__mdt> transformationMetadata, Iterator<Object> targetObjectIterator) {
+        this.metadataAndFunction = (List<Tuple>)new LazySObjectIterator(transformationMetadata)
+                .putIf(new IsNull(Transformation_Field__mdt.Source_Field__c), Transformation_Field__mdt.Source_Field__c, 'Id')
+                .putIf(new IsNull(Transformation_Field__mdt.Apex_Class__c), Transformation_Field__mdt.Apex_Class__c, IdentityFunction.class.getName())
+                .mapValues(new ToTwoTuple(new IdentityFunction(), new MetadataToTransformFunctionInstance()))
+                .toList(new List<Tuple>());
+        this.targetObjectIterator = targetObjectIterator;
     }
 
     global Object call(Object inputToTransform) {
-        Object result = targetType.newInstance();
+        Object result = targetObjectIterator.next();
 
         Function metadataAndFunctionToFunctionInput = new IfThen(
                 new IsValueTransform(),

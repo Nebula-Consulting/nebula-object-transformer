@@ -224,6 +224,38 @@ private class TransformationTest {
     }
 
     @IsTest
+    static void passThroughSObjectToOtherSObjectWithTargets() {
+        List<Transformation_Field__mdt> transformationFieldMetadata = new List<Transformation_Field__mdt> {
+                new Transformation_Field__mdt(Source_Field__c = 'FirstName', Target_Field__c = 'FirstName'),
+                new Transformation_Field__mdt(Source_Field__c = 'LastName', Target_Field__c = 'LastName')
+        };
+
+        TestIdGenerator contactIdGenerator = new TestIdGenerator(Contact.SObjectType);
+
+        List<Contact> targetContacts = new List<Contact> {
+                new Contact(Id = contactIdGenerator.next()),
+                new Contact(Id = contactIdGenerator.next())
+        };
+
+        Transformation thisTransformation = new Transformation(transformationFieldMetadata, ((List<Object>)targetContacts).iterator());
+
+        List<Lead> sourceLeads = new List<Lead> {
+                new Lead(FirstName = 'A', LastName = 'B'),
+                new Lead(FirstName = 'C', LastName = 'D')
+        };
+
+        List<Contact> results = new LazySObjectIterator(sourceLeads)
+                .mapValues(thisTransformation)
+                .toList(new List<Contact>());
+
+        for(Integer i=0; i < targetContacts.size(); i++) {
+            System.assertEquals(sourceLeads[i].FirstName, results[i].FirstName);
+            System.assertEquals(sourceLeads[i].LastName, results[i].LastName);
+            System.assertEquals(targetContacts[i].Id, results[i].Id);
+        }
+    }
+
+    @IsTest
     @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveAsserts') // Can't effectively test this in a package
     static void sillyCoverage() {
         new Transformation('A_Record_Name', Account.class);
