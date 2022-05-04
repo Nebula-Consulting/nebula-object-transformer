@@ -122,7 +122,14 @@ global virtual inherited sharing class Transformation implements Function {
         public Object call(Object o) {
             Transformation_Field__mdt transformationFieldMetadata = (Transformation_Field__mdt)o;
             Type transformationType = TypeLoader.getType(transformationFieldMetadata.Apex_Class__c);
-            return TypeLoader.getInstance(transformationType, transformationFieldMetadata.Apex_Class_Parameters__c);
+            if(transformationType == null) {
+                throw new ClassNotFoundException('Transformation Apex Class ' + transformationFieldMetadata.Apex_Class__c + ' not found. Is it global? Does it need to include a namespace?');
+            }
+            try {
+                return TypeLoader.getInstance(transformationType, transformationFieldMetadata.Apex_Class_Parameters__c);
+            } catch (JSONException e) {
+                throw new JSONException('Transformation Apex Class ' + transformationFieldMetadata.Apex_Class__c + ' must be annotated with @JsonAccess(deserializable=\'always\')', e);
+            }
         }
     }
 
