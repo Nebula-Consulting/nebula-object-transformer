@@ -27,6 +27,26 @@ private class TransformationTest {
     }
 
     @IsTest
+    static void noTargetField() {
+        List<Transformation_Field__mdt> transformationFieldMetadata = new List<Transformation_Field__mdt> {
+                new Transformation_Field__mdt(Source_Field__c = 'FirstName'),
+                new Transformation_Field__mdt(Source_Field__c = 'LastName', Target_Field__c = 'LastName')
+        };
+
+        Transformation thisTransformation = new Transformation(transformationFieldMetadata, Contact.class);
+
+        Lead theLead = new Lead(FirstName = 'A', LastName = 'B');
+        Contact newContact = (Contact)thisTransformation.call(theLead);
+
+        System.assertEquals(null, newContact.FirstName);
+        System.assertEquals(theLead.LastName, newContact.LastName);
+        Set<String> fields = thisTransformation.getSourceFields();
+        System.assertEquals(2, fields.size());
+        System.assert(fields.contains('FirstName'));
+        System.assert(fields.contains('LastName'));
+    }
+
+    @IsTest
     static void nullInputValues() {
         List<Transformation_Field__mdt> transformationFieldMetadata = new List<Transformation_Field__mdt> {
                 new Transformation_Field__mdt(Source_Field__c = 'FirstName', Target_Field__c = 'FirstName'),

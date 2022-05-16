@@ -78,6 +78,7 @@ global virtual inherited sharing class Transformation implements Function {
                 .compose(new ApplyFunctionInPosition(1).toPosition(0));
 
         new LazySObjectIterator(metadataAndFunction)
+                .filter(new Left(), new IsNotNull(Transformation_Field__mdt.Target_Field__c))
                 .mapValues(new TupleMapFunction(metadataAndFunctionToTargetField, metadataAndFunctionToTransformedValue)
                     .setTupleNewInstance(TwoTuple.newInstance))
                 .forEach(new PutTo(result));
