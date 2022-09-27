@@ -276,15 +276,6 @@ private class TransformationTest {
     }
 
     @IsTest
-    @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveAsserts') // Can't effectively test this in a package
-    static void sillyCoverage() {
-        new Transformation('A_Record_Name', Account.class);
-        new ReverseTransformation('A_Record_Name', Account.class);
-
-        // Nothing to assert, we don't know what metadata exists in the system
-    }
-
-    @IsTest
     static void transformationSOQLFields() {
         String exceptionMessage;
 
