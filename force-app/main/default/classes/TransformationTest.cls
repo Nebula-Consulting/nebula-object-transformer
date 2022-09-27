@@ -276,12 +276,29 @@ private class TransformationTest {
     }
 
     @IsTest
-    @SuppressWarnings('PMD.ApexUnitTestClassShouldHaveAsserts') // Can't effectively test this in a package
-    static void sillyCoverage() {
-        new Transformation('A_Record_Name', Account.class);
-        new ReverseTransformation('A_Record_Name', Account.class);
+    static void transformationSOQLFields() {
+        String exceptionMessage;
 
-        // Nothing to assert, we don't know what metadata exists in the system
+        try {
+            new Transformation('Account_to_JSON', Account.class);
+        } catch (SObjectException e) {
+            exceptionMessage = e.getMessage();
+        }
+
+        System.assertEquals(null, exceptionMessage, 'No exception message expected as all fields in SOQL are present');
+    }
+
+    @IsTest
+    static void reverseTransformationSOQLFields() {
+        String exceptionMessage;
+
+        try {
+            new ReverseTransformation('Account_to_JSON', Account.class);
+        } catch (SObjectException e) {
+            exceptionMessage = e.getMessage();
+        }
+
+        System.assertEquals(null, exceptionMessage, 'No exception message expected as all fields in SOQL are present');
     }
 
     public class FirstNameAndLastName implements Function {
