@@ -284,6 +284,32 @@ private class TransformationTest {
         // Nothing to assert, we don't know what metadata exists in the system
     }
 
+    @IsTest
+    static void transformationSOQLFields() {
+        String exceptionMessage;
+
+        try {
+            new Transformation('Account_to_JSON', Account.class);
+        } catch (SObjectException e) {
+            exceptionMessage = e.getMessage();
+        }
+
+        System.assertEquals(null, exceptionMessage, 'No exception message expected as all fields in SOQL are present');
+    }
+
+    @IsTest
+    static void reverseTransformationSOQLFields() {
+        String exceptionMessage;
+
+        try {
+            new ReverseTransformation('Account_to_JSON', Account.class);
+        } catch (SObjectException e) {
+            exceptionMessage = e.getMessage();
+        }
+
+        System.assertEquals(null, exceptionMessage, 'No exception message expected as all fields in SOQL are present');
+    }
+
     public class FirstNameAndLastName implements Function {
 
         public Object call(Object o) {
