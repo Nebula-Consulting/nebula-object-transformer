@@ -25,7 +25,7 @@
     "sfdcLoginUrl": "https://login.salesforce.com",
     "sourceApiVersion": "53.0",
     "packageAliases": {
-        "Nebula Core": "04t6M000000kmQwQAI",
+        "Nebula Core": "04t6M000000gaxSQAQ",
         "Nebula Object Transformer": "0Ho6M0000008OKzSAM",
         "Nebula Object Transformer@0.0.1-1": "04t6M000000kmLcQAI",
         "Nebula Object Transformer@0.0.1-2": "04t6M000000kmLmQAI",
