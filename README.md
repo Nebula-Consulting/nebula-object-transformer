@@ -1,13 +1,13 @@
 # Nebula Object Transformer
 
-Transform your objects! Configure your transformations using custom metadata records. 
+Transform your objects! Configure your transformations using custom metadata records!
 
 A common requirement, particularly in integrations is to be able to transform instances of one type of objects into another. 
 For example, we might want to transform a Contact record into a JSON object represented by a map. Or we might want to do the 
-reverse. Or we might need to transform between SObjects, or between JSON objects. As part of the transformation, we might need to 
+reverse. Or we might need to transform between differed types of SObject, or between JSON objects. As part of the transformation, we might need to 
 change the field names and/or apply functions to the values.
 
-This library provides a generic method to do all of that, driven by custom metadata records.
+The Nebula Object Transformer provides a generic method to do all of that, driven by custom metadata configuration.
 
 Since it is built on top of [Nebula Core](https://github.com/aidan-harding/nebula-core), it supports deep references in 
 the field names. e.g. a field reference on Contact could be 
