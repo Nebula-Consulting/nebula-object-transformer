@@ -42,18 +42,11 @@ global virtual inherited sharing class Transformation implements Function {
                 targetObjectIterator);
     }
 
-    @TestVisible
-    protected Transformation(List<Transformation_Field__mdt> transformationMetadata, Type targetType) {
-        this.metadataAndFunction = (List<Tuple>)new LazySObjectIterator(transformationMetadata)
-                .putIf(new IsNull(Transformation_Field__mdt.Source_Field__c), Transformation_Field__mdt.Source_Field__c, 'Id')
-                .putIf(new IsNull(Transformation_Field__mdt.Apex_Class__c), Transformation_Field__mdt.Apex_Class__c, IdentityFunction.class.getName())
-                .mapValues(new ToTwoTuple(new IdentityFunction(), new MetadataToTransformFunctionInstance()))
-                .toList(new List<Tuple>());
-        this.targetObjectIterator = new NewInstanceGenerator(targetType);
+    global Transformation(List<Transformation_Field__mdt> transformationMetadata, Type targetType) {
+        this(transformationMetadata, new NewInstanceGenerator(targetType));
     }
 
-    @TestVisible
-    protected Transformation(List<Transformation_Field__mdt> transformationMetadata, Iterator<Object> targetObjectIterator) {
+    global Transformation(List<Transformation_Field__mdt> transformationMetadata, Iterator<Object> targetObjectIterator) {
         this.metadataAndFunction = (List<Tuple>)new LazySObjectIterator(transformationMetadata)
                 .putIf(new IsNull(Transformation_Field__mdt.Source_Field__c), Transformation_Field__mdt.Source_Field__c, 'Id')
                 .putIf(new IsNull(Transformation_Field__mdt.Apex_Class__c), Transformation_Field__mdt.Apex_Class__c, IdentityFunction.class.getName())
