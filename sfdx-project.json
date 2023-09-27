@@ -23,7 +23,7 @@
   "name": "Nebula Object Transformer",
   "namespace": "nebc",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "57.0",
+  "sourceApiVersion": "58.0",
   "packageAliases": {
     "Nebula Core": "04t6M000000gb7IQAQ",
     "Nebula Object Transformer": "0Ho6M0000008OKzSAM",
