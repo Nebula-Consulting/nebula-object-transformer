@@ -56,15 +56,24 @@ global virtual inherited sharing class Transformation implements Function {
     }
 
     global Object call(Object inputToTransform) {
-        Object result = targetObjectIterator.next();
+        return transform(inputToTransform, targetObjectIterator.next());
+    }
 
+    /**
+     * Perform a one-off transformation of an object
+     *
+     * @param source The object to transform
+     * @param target The object to transform into
+     * @return The transformed object
+    */
+    global Object transform(Object source, Object target) {
         Function metadataAndFunctionToFunctionInput = new IfThen(
                 new IsValueTransform(),
                 new Composition(new Left())
                         .compose(new FieldFromSObject(Transformation_Field__mdt.Source_Field__c))
-                        .compose(new GetFrom(inputToTransform)))
+                        .compose(new GetFrom(source)))
                 .elseFunction(
-                        new ToTwoTuple(new Left(), new ConstantFunction(inputToTransform))
+                        new ToTwoTuple(new Left(), new ConstantFunction(source))
                 );
 
         Function metadataAndFunctionToTransformedValue = new Composition(new TupleMapFunction(metadataAndFunctionToFunctionInput, new Right()))
@@ -73,10 +82,10 @@ global virtual inherited sharing class Transformation implements Function {
         new LazySObjectIterator(metadataAndFunction)
                 .filter(new Left(), new IsNotNull(Transformation_Field__mdt.Target_Field__c))
                 .mapValues(new TupleMapFunction(metadataAndFunctionToTargetField, metadataAndFunctionToTransformedValue)
-                    .setTupleNewInstance(TwoTuple.newInstance))
-                .forEach(new PutTo(result));
+                        .setTupleNewInstance(TwoTuple.newInstance))
+                .forEach(new PutTo(target));
 
-        return result;
+        return target;
     }
 
     /**

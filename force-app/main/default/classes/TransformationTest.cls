@@ -161,6 +161,27 @@ private class TransformationTest {
     }
 
     @IsTest
+    static void transformSObjectToMapOneOff() {
+        List<Transformation_Field__mdt> transformationFieldMetadata = new List<Transformation_Field__mdt> {
+                new Transformation_Field__mdt(Source_Field__c = 'FirstName', Target_Field__c = 'first_name'),
+                new Transformation_Field__mdt(Source_Field__c = 'Birthdate', Target_Field__c = 'date_of_birth', Apex_Class__c = 'JsonSerialize')
+        };
+
+        Map<String, Object> newMap = new Map<String, Object>{
+                'isMyMap' => true
+        };
+
+        Transformation thisTransformation = new Transformation(transformationFieldMetadata,  Map<String, Object>.class);
+
+        Contact theContact = new Contact(FirstName = 'A', Birthdate = Date.today());
+        thisTransformation.transform(theContact, newMap);
+
+        System.assertEquals(theContact.FirstName, newMap.get('first_name'));
+        System.assertEquals(JSON.serialize(theContact.Birthdate), newMap.get('date_of_birth'));
+        System.assertEquals(true, newMap.get('isMyMap'));
+    }
+
+    @IsTest
     static void sObjectToMapRoundTrip() {
         List<Transformation_Field__mdt> transformationFieldMetadata = new List<Transformation_Field__mdt> {
                 new Transformation_Field__mdt(Source_Field__c = 'FirstName', Target_Field__c = 'first_name'),
