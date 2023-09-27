@@ -7,10 +7,10 @@
 
 global virtual inherited sharing class Transformation implements Function {
 
-    private List<Tuple> metadataAndFunction;
-    private Iterator<Object> targetObjectIterator;
+    private final List<Tuple> metadataAndFunction;
+    private final Iterator<Object> targetObjectIterator;
 
-    private static Function metadataAndFunctionToTargetField = new Composition(new Left()).compose(new FieldFromSObject(Transformation_Field__mdt.Target_Field__c));
+    private static final Function metadataAndFunctionToTargetField = new Composition(new Left()).compose(new FieldFromSObject(Transformation_Field__mdt.Target_Field__c));
 
     /**
      * @param transformationName The DeveloperName of a Transformation__mdt record to use
@@ -91,9 +91,21 @@ global virtual inherited sharing class Transformation implements Function {
                 .toSet(new Set<String>());
     }
 
+    /**
+     * Gets the fields used in the transformation in case they are required for a SOQL query or similar
+     *
+     * @return the fields used in the transformation
+     */
+    global Set<String> getTargetFields() {
+        return new LazyIterator(metadataAndFunction)
+                .mapValues(new Left())
+                .mapValues(new FieldFromSObject(Transformation_Field__mdt.Target_Field__c))
+                .toSet(new Set<String>());
+    }
+
     private class ApplyFunctionInPosition implements Function {
 
-        private Integer functionIndex;
+        private final Integer functionIndex;
         private Integer valueIndex;
 
         public ApplyFunctionInPosition(Integer functionIndex) {

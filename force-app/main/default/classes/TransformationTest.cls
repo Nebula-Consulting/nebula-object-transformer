@@ -321,6 +321,20 @@ private class TransformationTest {
         System.assertEquals(null, exceptionMessage, 'No exception message expected as all fields in SOQL are present');
     }
 
+    @IsTest static void getSourceAndTargetFields() {
+        List<Transformation_Field__mdt> transformationFieldMetadata = new List<Transformation_Field__mdt> {
+                new Transformation_Field__mdt(Source_Field__c = 'source1', Target_Field__c = 'target1'),
+                new Transformation_Field__mdt(Source_Field__c = 'source2', Target_Field__c = 'target2')
+        };
+
+        Transformation transformation = new Transformation(transformationFieldMetadata, Contact.class);
+        Set<String> sourceFields = transformation.getSourceFields();
+        Set<String> targetFields = transformation.getTargetFields();
+
+        Assert.areEqual(new Set<String>{'source1', 'source2'}, sourceFields);
+        Assert.areEqual(new Set<String>{'target1', 'target2'}, targetFields);
+    }
+
     public class FirstNameAndLastName implements Function {
 
         public Object call(Object o) {
