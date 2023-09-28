@@ -4,8 +4,8 @@
       "path": "force-app",
       "default": true,
       "package": "Nebula Object Transformer",
-      "versionName": "1.0.4",
-      "versionNumber": "1.0.4.NEXT",
+      "versionName": "1.0.5",
+      "versionNumber": "1.0.5.NEXT",
       "dependencies": [
         {
           "package": "Nebula Core"
@@ -39,6 +39,7 @@
     "Nebula Object Transformer@1.0.1-4": "04t6M000000gauiQAA",
     "Nebula Object Transformer@1.0.2-1": "04t6M000000gaunQAA",
     "Nebula Object Transformer@1.0.3-1": "04t6M000000gb7NQAQ",
-    "Nebula Object Transformer@1.0.4-1": "04t6M000000gb7SQAQ"
+    "Nebula Object Transformer@1.0.4-1": "04t6M000000gb7SQAQ",
+    "Nebula Object Transformer@1.0.5-1": "04tQB00000001iTYAQ"
   }
 }

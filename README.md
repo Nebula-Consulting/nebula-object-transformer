@@ -16,8 +16,8 @@ there. Similarly, this format can be used as a target in JSON objects to implici
 
 ## Installation
 
-* Package entry `"Nebula Object Transformer": "04t6M000000gb7SQAQ"`
-* Installation URL `/packaging/installPackage.apexp?p0=04t6M000000gb7SQAQ`
+* Package entry `"Nebula Object Transformer": "04tQB00000001iTYAQ"`
+* Installation URL `/packaging/installPackage.apexp?p0=04tQB00000001iTYAQ`
 
 ## Examples
 
@@ -338,6 +338,25 @@ Where the actual transformation function is defined as:
         }
     }
 
+## Ignoring some fields
+
+If you are doing a round-trip transformation, then you may include some fields that only work in one direction. You can
+describe this by using `Target_Is_Read_Only__c` and `Source_Is_Read_Only__c` in the custom metadata. 
+
+When the target is marked as ready-only, then the transformation will not attempt to write to it. You might still want
+to include for when you reverse the transformation in the second half of your round trip e.g. for trannsforming the 
+last modified date of a record in an external system onto a custom field in Salesforce. You can read that date from the
+external system, but you should not write it back later.
+
+When the source is marked as read-only, this has no effect on the straightforward transformation. However, when you 
+do the reverse transformation, this turns into the **target** being read-only. In which case this field is not written
+to during a reverse transformation e.g. when reading from a formula field on an SObject and transforming that to send
+to an external system. When you reverse the transformation to back from the external system to the SObject, you must not
+write back to the formula field.
+
+Note that the notion of read only is on the in-memory object. Record Id for an SObject is an example that you would not
+want to mark as read-only. In database terms, the Id field is not updateable. But you need that value for the in-memory object
+if you are going to do an update to the database.
 
 ## How to query for transformation
 
