@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Target_Is_Read_Only__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Some target fields (e.g. formulas on SObjects) cannot be written on the target object. So, setting Target_Is_Read_Only__c will prevent them from being written. You may still want to include a target that will be ignored if you are doing a round-trip with a reverse transformation. In that case, this field may end up being used.</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>Some target fields (e.g. formulas on SObjects) cannot be written on the target object. So, setting Target_Is_Read_Only__c will prevent them from being written. You may still want to include a target that will be ignored if you are doing a round-trip with a reverse transformation. In that case, this field may end up being used.</inlineHelpText>
+    <label>Target Is Read-Only</label>
+    <type>Checkbox</type>
+</CustomField>

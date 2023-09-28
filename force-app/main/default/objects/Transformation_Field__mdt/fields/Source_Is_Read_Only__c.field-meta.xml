@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Source_Is_Read_Only__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Some target fields (e.g. formulas on SObjects) cannot be written on the target object. So, setting Target_Is_Read_Only__c will prevent them from being written. This source version of the flag makes no difference to a straightforward transformation. It is used in combination with a *reverse* transformation - when you make a reverse transformation, this flag is moved to Target_Is_Read_Only__c, allowing a single configuration to be used for round-trips.</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <inlineHelpText>Some target fields (e.g. formulas on SObjects) cannot be written on the target object. So, setting Target_Is_Read_Only__c will prevent them from being written. This source version of the flag makes no difference to a straightforward transformation. It is used in combination with a *reverse* transformation - when you make a reverse transformation, this flag is moved to Target_Is_Read_Only__c, allowing a single configuration to be used for round-trips.</inlineHelpText>
+    <label>Source Is Read-Only</label>
+    <type>Checkbox</type>
+</CustomField>

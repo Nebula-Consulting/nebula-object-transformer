@@ -8,12 +8,13 @@ global inherited sharing class ReverseTransformation extends Transformation {
 
     global ReverseTransformation(String transformationName, Type targetType) {
         this(
-        [
-                SELECT Source_Field__c, Target_Field__c, Apex_Class__c, Apex_Class_Parameters__c, Apex_Class_Receives__c,
-                        Reverse_Apex_Class__c, Reverse_Apex_Class_Parameters__c, Reverse_Apex_Class_Receives__c
-                FROM Transformation_Field__mdt
-                WHERE Transformation__r.DeveloperName = :transformationName
-        ],
+                [
+                        SELECT Source_Field__c, Target_Field__c, Apex_Class__c, Apex_Class_Parameters__c, Apex_Class_Receives__c,
+                                Reverse_Apex_Class__c, Reverse_Apex_Class_Parameters__c, Reverse_Apex_Class_Receives__c,
+                                Target_Is_Read_Only__c, Source_Is_Read_Only__c
+                        FROM Transformation_Field__mdt
+                        WHERE Transformation__r.DeveloperName = :transformationName
+                ],
                 targetType);
     }
 
@@ -21,7 +22,8 @@ global inherited sharing class ReverseTransformation extends Transformation {
         this(
                 [
                         SELECT Source_Field__c, Target_Field__c, Apex_Class__c, Apex_Class_Parameters__c, Apex_Class_Receives__c,
-                                Reverse_Apex_Class__c, Reverse_Apex_Class_Parameters__c, Reverse_Apex_Class_Receives__c
+                                Reverse_Apex_Class__c, Reverse_Apex_Class_Parameters__c, Reverse_Apex_Class_Receives__c,
+                                Target_Is_Read_Only__c, Source_Is_Read_Only__c
                         FROM Transformation_Field__mdt
                         WHERE Transformation__r.DeveloperName = :transformationName
                 ],
@@ -38,6 +40,7 @@ global inherited sharing class ReverseTransformation extends Transformation {
                 .mapValuesT(new SwapFields(Transformation_Field__mdt.Apex_Class__c, Transformation_Field__mdt.Reverse_Apex_Class__c))
                 .mapValuesT(new SwapFields(Transformation_Field__mdt.Apex_Class_Parameters__c, Transformation_Field__mdt.Reverse_Apex_Class_Parameters__c))
                 .mapValuesT(new SwapFields(Transformation_Field__mdt.Apex_Class_Receives__c, Transformation_Field__mdt.Reverse_Apex_Class_Receives__c))
+                .mapValuesT(new SwapFields(Transformation_Field__mdt.Source_Is_Read_Only__c, Transformation_Field__mdt.Target_Is_Read_Only__c))
                 .toList(new List<Transformation_Field__mdt>()), targetObjectIterator);
     }
 }

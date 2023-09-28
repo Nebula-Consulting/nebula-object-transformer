@@ -161,6 +161,46 @@ private class TransformationTest {
     }
 
     @IsTest
+    static void ignoreTarget() {
+        List<Transformation_Field__mdt> transformationFieldMetadata = new List<Transformation_Field__mdt> {
+                new Transformation_Field__mdt(Source_Field__c = 'FirstName', Target_Field__c = 'first_name'),
+                new Transformation_Field__mdt(Source_Field__c = 'Birthdate', Target_Field__c = 'date_of_birth', Apex_Class__c = 'JsonSerialize', Target_Is_Read_Only__c = true)
+        };
+
+        Transformation thisTransformation = new Transformation(transformationFieldMetadata,  Map<String, Object>.class);
+
+        Contact theContact = new Contact(FirstName = 'A', Birthdate = Date.today());
+        Map<String, Object> newMap = (Map<String, Object>)thisTransformation.call(theContact);
+
+        System.assertEquals(theContact.FirstName, newMap.get('first_name'));
+        System.assert(!newMap.containsKey('date_of_birth'), 'date_of_birth is readonly so should not be in the map');
+    }
+
+    @IsTest
+    static void ignoreSourceOnReverseTarget() {
+        List<Transformation_Field__mdt> transformationFieldMetadata = new List<Transformation_Field__mdt>{
+                new Transformation_Field__mdt(Source_Field__c = 'FirstName', Target_Field__c = 'first_name', Source_Is_Read_Only__c = true),
+                new Transformation_Field__mdt(
+                        Source_Field__c = 'LastName',
+                        Target_Field__c = 'last_name',
+                        Target_Is_Read_Only__c = true
+                        )
+        };
+
+        Transformation thisTransformation = new ReverseTransformation(transformationFieldMetadata,  Contact.class);
+
+        Map<String, Object> theMap = new Map<String, Object>{
+                'first_name' => 'A',
+                'last_name' => 'b'
+        };
+
+        Contact theContact  = (Contact)thisTransformation.call(theMap);
+
+        System.assertEquals(null, theContact.FirstName);
+        System.assertEquals(theMap.get('last_name'), theContact.LastName);
+    }
+
+    @IsTest
     static void transformSObjectToMapOneOff() {
         List<Transformation_Field__mdt> transformationFieldMetadata = new List<Transformation_Field__mdt> {
                 new Transformation_Field__mdt(Source_Field__c = 'FirstName', Target_Field__c = 'first_name'),

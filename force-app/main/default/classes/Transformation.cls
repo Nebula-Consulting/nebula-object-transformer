@@ -18,12 +18,13 @@ global virtual inherited sharing class Transformation implements Function {
      */
     global Transformation(String transformationName, Type targetType) {
         this(
-        [
-                SELECT Source_Field__c, Target_Field__c, Apex_Class__c, Apex_Class_Parameters__c, Apex_Class_Receives__c,
-                        Reverse_Apex_Class__c, Reverse_Apex_Class_Parameters__c, Reverse_Apex_Class_Receives__c
-                FROM Transformation_Field__mdt
-                WHERE Transformation__r.DeveloperName = :transformationName
-        ],
+                [
+                        SELECT Source_Field__c, Target_Field__c, Apex_Class__c, Apex_Class_Parameters__c, Apex_Class_Receives__c,
+                                Reverse_Apex_Class__c, Reverse_Apex_Class_Parameters__c, Reverse_Apex_Class_Receives__c,
+                                Source_Is_Read_Only__c, Target_Is_Read_Only__c
+                        FROM Transformation_Field__mdt
+                        WHERE Transformation__r.DeveloperName = :transformationName
+                ],
                 targetType);
     }
 
@@ -33,12 +34,13 @@ global virtual inherited sharing class Transformation implements Function {
      */
     global Transformation(String transformationName, Iterator<Object> targetObjectIterator) {
         this(
-        [
-                SELECT Source_Field__c, Target_Field__c, Apex_Class__c, Apex_Class_Parameters__c, Apex_Class_Receives__c,
-                        Reverse_Apex_Class__c, Reverse_Apex_Class_Parameters__c, Reverse_Apex_Class_Receives__c
-                FROM Transformation_Field__mdt
-                WHERE Transformation__r.DeveloperName = :transformationName
-        ],
+                [
+                        SELECT Source_Field__c, Target_Field__c, Apex_Class__c, Apex_Class_Parameters__c, Apex_Class_Receives__c,
+                                Reverse_Apex_Class__c, Reverse_Apex_Class_Parameters__c, Reverse_Apex_Class_Receives__c,
+                                Source_Is_Read_Only__c, Target_Is_Read_Only__c
+                        FROM Transformation_Field__mdt
+                        WHERE Transformation__r.DeveloperName = :transformationName
+                ],
                 targetObjectIterator);
     }
 
@@ -48,6 +50,7 @@ global virtual inherited sharing class Transformation implements Function {
 
     global Transformation(List<Transformation_Field__mdt> transformationMetadata, Iterator<Object> targetObjectIterator) {
         this.metadataAndFunction = (List<Tuple>)new LazySObjectIterator(transformationMetadata)
+                .filterT(new IsNot(new IsSObjectFieldEqual(Transformation_Field__mdt.Target_Is_Read_Only__c, true)))
                 .putIf(new IsNull(Transformation_Field__mdt.Source_Field__c), Transformation_Field__mdt.Source_Field__c, 'Id')
                 .putIf(new IsNull(Transformation_Field__mdt.Apex_Class__c), Transformation_Field__mdt.Apex_Class__c, IdentityFunction.class.getName())
                 .mapValues(new ToTwoTuple(new IdentityFunction(), new MetadataToTransformFunctionInstance()))
