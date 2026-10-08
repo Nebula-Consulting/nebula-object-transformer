@@ -16,8 +16,8 @@ there. Similarly, this format can be used as a target in JSON objects to implici
 
 ## Installation
 
-* Package entry `"Nebula Object Transformer": "04tQB00000001iTYAQ"`
-* Installation URL `/packaging/installPackage.apexp?p0=04tQB00000001iTYAQ`
+* Package entry `"Nebula Object Transformer": "04tQB000002huU1YAI"`
+* Installation URL `/packaging/installPackage.apexp?p0=04tQB000002huU1YAI`
 
 ## Examples
 
